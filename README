@@ -1,0 +1,4 @@
+This filesystem is almost functional.
+
+I still need to add support for setting the namenode.
+The name node is currently hardcoded to localhost:9000
