@@ -40,11 +40,11 @@ class HdfsClientReal implements HdfsClient {
     /**
      * constructor
      */
-    HdfsClientReal(UserCache userCache) throws IOException {
+    HdfsClientReal(UserCache userCache, String hdfsUrl) throws IOException {
         this.userCache = userCache;
         try {
             Configuration conf = new Configuration();
-            dfs = FileSystem.get(new URI("hdfs://127.0.0.1:9000"), conf);
+            dfs = FileSystem.get(new URI(hdfsUrl), conf);
         } catch(URISyntaxException e) {
             throw new IOException("URL Issue");
         }

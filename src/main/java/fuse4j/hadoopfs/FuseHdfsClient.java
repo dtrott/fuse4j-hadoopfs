@@ -42,6 +42,9 @@ import java.util.Set;
 
 @SuppressWarnings({"OctalInteger"})
 public class FuseHdfsClient implements Filesystem3, XattrSupport, LifecycleSupport, Runnable {
+
+    private static final String LOCALHOST_HDFS = "hdfs://localhost:9000";
+
     private static final Log log = LogFactory.getLog(FuseHdfsClient.class);
 
     private static final int BLOCK_SIZE = 512;
@@ -53,15 +56,30 @@ public class FuseHdfsClient implements Filesystem3, XattrSupport, LifecycleSuppo
 
     private Thread ctxtMapCleanerThread = null;
 
-
     public FuseHdfsClient() {
-        hdfs = HdfsClientFactory.create();
+        this(LOCALHOST_HDFS);
+    }
+
+    public FuseHdfsClient(String [] args) {
+        this(parseArgs(args));
+    }
+
+    public FuseHdfsClient(String hdfsUrl) {
+        hdfs = HdfsClientFactory.create(hdfsUrl);
 
         hdfsFileCtxtMap = new HashMap<String, HdfsFileContext>();
 
         ctxtMapCleanerThread = new Thread(this);
         ctxtMapCleanerThread.start();
         log.info("created");
+    }
+
+    private static String parseArgs(String[] args) {
+        if (args.length > 1) {
+            return args[1];
+        } else {
+            return LOCALHOST_HDFS;
+        }
     }
 
     public int getattr(String path, FuseGetattrSetter getattrSetter) throws FuseException {
