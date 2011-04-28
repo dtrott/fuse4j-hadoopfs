@@ -30,6 +30,7 @@ import fuse.FuseStatfsSetter;
 import fuse.LifecycleSupport;
 import fuse.XattrLister;
 import fuse.XattrSupport;
+import fuse.util.FuseArgumentParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -61,7 +62,7 @@ public class FuseHdfsClient implements Filesystem3, XattrSupport, LifecycleSuppo
     }
 
     public FuseHdfsClient(String [] args) {
-        this(parseArgs(args));
+        this(new FuseArgumentParser(args).getSource());
     }
 
     public FuseHdfsClient(String hdfsUrl) {
@@ -72,14 +73,6 @@ public class FuseHdfsClient implements Filesystem3, XattrSupport, LifecycleSuppo
         ctxtMapCleanerThread = new Thread(this);
         ctxtMapCleanerThread.start();
         log.info("created");
-    }
-
-    private static String parseArgs(String[] args) {
-        if (args.length > 1) {
-            return args[1];
-        } else {
-            return LOCALHOST_HDFS;
-        }
     }
 
     public int getattr(String path, FuseGetattrSetter getattrSetter) throws FuseException {
@@ -263,13 +256,13 @@ public class FuseHdfsClient implements Filesystem3, XattrSupport, LifecycleSuppo
 
     public int statfs(FuseStatfsSetter statfsSetter) throws FuseException {
         statfsSetter.set(
-            BLOCK_SIZE,
-            1000,
-            200,
-            180,
-            1000000, // TODO get actual file count.
-            0,
-            NAME_LENGTH
+                BLOCK_SIZE,
+                1000,
+                200,
+                180,
+                1000000, // TODO get actual file count.
+                0,
+                NAME_LENGTH
         );
 
         return 0;
@@ -484,6 +477,11 @@ public class FuseHdfsClient implements Filesystem3, XattrSupport, LifecycleSuppo
 
         if(ctxtMapCleanerThread != null) {
             ctxtMapCleanerThread.interrupt();
+        }
+
+        try {
+            System.exit(0);
+        } catch (Exception e) {
         }
 
         return 0;
