@@ -1,4 +1,8 @@
-This filesystem is almost functional.
+This filesystem is now functional.
 
-I still need to add support for setting the namenode.
-The name node is currently hardcoded to localhost:9000
+The mount command takes two arguments:
++ Mount Point
++ The HDFS server details
+
+For example:
+./hadoopfs.sh /hadoop localhost:9000
